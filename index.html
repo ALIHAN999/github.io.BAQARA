@@ -196,6 +196,7 @@
       }
       .section-heading {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
@@ -207,6 +208,20 @@
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.05em;
+      }
+      .heading-actions {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+      }
+      .full-sentence[hidden] {
+        display: none;
+      }
+      .sentence-toggle {
+        padding: 6px 13px;
+        font-size: 0.8rem;
       }
       .translation-trigger {
         display: inline-flex;
@@ -785,18 +800,28 @@
 
         <div class="content">
           <div class="section-heading">
-            <h3 id="heading-full-ayah">Аят целиком</h3>
-            <button
-              type="button"
-              class="translation-trigger"
-              id="open-translation-btn"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-            >
-              Перевод Кулиева
-            </button>
+            <div class="heading-actions">
+              <button
+                type="button"
+                class="translation-trigger sentence-toggle"
+                id="toggle-sentence-btn"
+                aria-controls="full-sentence"
+                aria-expanded="false"
+              >
+                Показать аят целиком
+              </button>
+              <button
+                type="button"
+                class="translation-trigger"
+                id="open-translation-btn"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
+                Перевод Кулиева
+              </button>
+            </div>
           </div>
-          <div class="full-sentence" lang="ar" dir="rtl" id="full-sentence"></div>
+          <div class="full-sentence" lang="ar" dir="rtl" id="full-sentence" hidden></div>
 
           <div class="section-heading"><h3 id="heading-words">Слова аята</h3></div>
           <div class="word-grid" id="word-grid"></div>
@@ -1312,7 +1337,7 @@
           ],
           cells: [
             { word: 'وَإِذَا', translation: 'а когда' },
-            { word: 'قِيلَ', translation: 'сказано' },
+            { word: 'قِيلَ', translation: '(было) сказано' },
             { word: 'لَهُمْ', translation: 'им' },
             { word: 'لَا', translation: 'не' },
             { word: 'تُفْسِدُواْ', translation: 'распространяйте беспорядок' },
@@ -1324,10 +1349,45 @@
             { word: 'مُصْلِحُونَ', translation: 'те, кто устанавливает порядок' },
           ],
         },
+        {
+          title: 'Сура 2',
+          ayah: 12,
+          sentence: 'أَلَآ إِنَّهُمْ هُمُ ٱلْمُفْسِدُونَ وَلَـٰكِن لَّا يَشْعُرُونَ',
+          translation: 'Воистину, именно они распространяют нечестие, но они не осознают этого.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/12.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/12.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/12.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/12.mp3',
+            },
+          ],
+          cells: [
+            { word: 'أَلَآ', translation: '(обратите внимание)' },
+            { word: 'إِنَّهُمْ', translation: 'поистине, они' },
+            { word: 'هُمُ', translation: 'они' },
+            { word: 'ٱلْمُفْسِدُونَ', translation: 'распространяющие беспорядок' },
+            { word: 'وَلَـٰكِن', translation: 'но' },
+            { word: 'لَّا', translation: 'не' },
+            { word: 'يَشْعُرُونَ', translation: 'осознают они (этого)' },
+          ],
+        },
       ];
 
       const lessonTitle = document.getElementById('lesson-title');
       const fullSentenceEl = document.getElementById('full-sentence');
+      const toggleSentenceBtn = document.getElementById('toggle-sentence-btn');
+      let sentenceVisible = false;
       const grid = document.getElementById('word-grid');
       const audioPanel = document.getElementById('audio-panel');
       const reciterTabs = document.getElementById('reciter-tabs');
@@ -1341,7 +1401,6 @@
       const nextAyahText = document.getElementById('next-ayah-text');
 
       // Заголовки разделов: переименовываются, когда выбрана басмала
-      const headingFullAyah = document.getElementById('heading-full-ayah');
       const headingWords = document.getElementById('heading-words');
       const audioHeading = document.getElementById('audio-heading');
 
@@ -1519,7 +1578,6 @@
 
         // Формулировки разделов под басмалу
         const isBasmala = Boolean(item.isBasmala);
-        headingFullAyah.textContent = isBasmala ? 'Басмала целиком' : 'Аят целиком';
         headingWords.textContent = isBasmala ? 'Слова басмалы' : 'Слова аята';
         audioHeading.textContent = isBasmala ? 'Послушать басмалу' : 'Послушать аят';
 
@@ -1531,6 +1589,7 @@
         });
 
         renderArabicWithWaqf(fullSentenceEl, item.sentence);
+        setSentenceVisible(false);
         document.getElementById('sentence-translation').textContent = item.translation;
 
         item.cells.forEach((cell) => {
@@ -1565,6 +1624,21 @@
         prevAyahText.textContent =
           hasPrev && sentences[index - 1].isBasmala ? 'Басмала' : 'Предыдущий аят';
       }
+
+      // Текст аята/басмалы скрыт, пока не нажата кнопка «Показать аят целиком»
+      function setSentenceVisible(visible) {
+        const item = sentences[currentIndex];
+        const noun = item && item.isBasmala ? 'басмалу' : 'аят';
+        sentenceVisible = visible;
+        fullSentenceEl.hidden = !visible;
+        toggleSentenceBtn.textContent =
+          (visible ? 'Скрыть ' : 'Показать ') + noun + ' целиком';
+        toggleSentenceBtn.setAttribute('aria-expanded', String(visible));
+      }
+
+      toggleSentenceBtn.addEventListener('click', () => {
+        setSentenceVisible(!sentenceVisible);
+      });
 
       function renderAudios(audios) {
         reciterTabs.replaceChildren();
