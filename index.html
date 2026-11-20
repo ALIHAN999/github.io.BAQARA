@@ -773,6 +773,42 @@
       .content {
         flex: 1 1 auto;
       }
+
+      /* «Слова аята» — во фрейме со скроллом,
+         аудио и навигация прижаты к низу экрана */
+      body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+      }
+      .page,
+      .lesson-card {
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .content {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .word-grid {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        align-content: flex-start;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        overscroll-behavior: contain;
+      }
+      .audio-panel,
+      .ayah-nav {
+        flex: 0 0 auto;
+      }
     </style>
   </head>
   <body>
