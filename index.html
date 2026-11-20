@@ -750,6 +750,29 @@
           animation-duration: 0.01ms !important;
         }
       }
+
+      /* Основной блок занимает всё тело страницы */
+      body {
+        padding: 0;
+      }
+      .page {
+        display: flex;
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+      }
+      .lesson-card {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .content {
+        flex: 1 1 auto;
+      }
     </style>
   </head>
   <body>
