@@ -1,0 +1,1744 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#123d35" />
+    <title>Сура "аль-Бакара"</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Кораническая гарнитура: KFGQPC Uthmanic HAFS (расм ‘усмани,
+         чтение Хафса). Лежит локально в font/ (KFGQPC HAFS Uthmanic Script v0.18). */
+      @font-face {
+        font-family: 'KFGQPC Uthmanic HAFS';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('font/UthmanicHafs1Ver18.ttf') format('truetype');
+      }
+      :root {
+        --forest: #123d35;
+        --forest-light: #1c594b;
+        --gold: #d6a958;
+        --cream: #f7f2e8;
+        --paper: #fffdf8;
+        --ink: #24332e;
+        --muted: #79847d;
+        --line: #e9e4d8;
+        /* Основная арабская гарнитура для аятов */
+        --arabic-font:
+          'KFGQPC Uthmanic HAFS', 'Amiri Quran', 'Noto Naskh Arabic', 'Amiri', 'Times New Roman',
+          serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        margin: 0;
+        padding: 16px 14px calc(20px + env(safe-area-inset-bottom));
+        color: var(--ink);
+        background: radial-gradient(ellipse at 10% 0%, #e6d7b742, transparent 34%), var(--cream);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+      /* Стили при активном полноэкранном режиме */
+      :fullscreen body,
+      :-webkit-full-screen body {
+        justify-content: center;
+      }
+      button,
+      select {
+        font: inherit;
+      }
+      .page {
+        width: min(100%, 720px);
+        margin: 0 auto;
+      }
+      .lesson-card {
+        overflow: hidden;
+        border: 1px solid #ffffffb3;
+        border-radius: 22px;
+        background: var(--paper);
+        box-shadow: 0 14px 40px #243a2c12;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 16px 18px;
+        color: #fffdf8;
+        background: linear-gradient(135deg, var(--forest), #0d302a);
+      }
+      .hero::after {
+        position: absolute;
+        right: -35px;
+        bottom: -90px;
+        width: 180px;
+        height: 180px;
+        border: 1px solid #d6a95835;
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 18px #d6a9580a,
+          0 0 0 38px #d6a95808;
+        content: '';
+        pointer-events: none;
+      }
+      .hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .hero h2 {
+        margin: 0;
+        font-size: clamp(1.2rem, 4.5vw, 1.65rem);
+        line-height: 1.2;
+      }
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      /* Кнопка вызова окна выбора аята */
+      .lesson-select-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #ffffff3a;
+        border-radius: 10px;
+        color: #fffdf8;
+        background: #ffffff12;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          transform 0.12s ease;
+      }
+      .lesson-select-btn:hover {
+        background: #ffffff24;
+        border-color: var(--gold);
+      }
+      .lesson-select-btn:active {
+        transform: scale(0.96);
+      }
+      .lesson-select-btn svg {
+        width: 15px;
+        height: 15px;
+        stroke: var(--gold);
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        transition: transform 0.2s ease;
+      }
+      .lesson-select-btn[aria-expanded='true'] svg {
+        transform: rotate(180deg);
+      }
+      /* Кнопка полноэкранного режима */
+      .fullscreen-btn {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        place-items: center;
+        padding: 0;
+        border: 1px solid #ffffff3a;
+        border-radius: 10px;
+        color: #fffdf8;
+        background: #ffffff12;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          transform 0.12s ease;
+      }
+      .fullscreen-btn:hover {
+        background: #ffffff24;
+        border-color: var(--gold);
+      }
+      .fullscreen-btn:active {
+        transform: scale(0.95);
+      }
+      .fullscreen-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .fullscreen-btn[hidden] {
+        display: none;
+      }
+      .content {
+        padding: 16px 18px 18px;
+      }
+      .section-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .section-heading h3 {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .heading-actions {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+      }
+      .full-sentence[hidden] {
+        display: none;
+      }
+      .sentence-toggle {
+        padding: 6px 13px;
+        font-size: 0.8rem;
+      }
+      .translation-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 11px;
+        border: 1px solid #d6a95880;
+        border-radius: 999px;
+        background: #fcf8ef;
+        color: var(--forest);
+        font-size: 0.76rem;
+        font-weight: 650;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          transform 0.12s ease;
+      }
+      .translation-trigger:hover {
+        background: #f5ebd6;
+      }
+      .translation-trigger:active {
+        transform: scale(0.97);
+      }
+      .full-sentence {
+        margin: 0 0 14px;
+        padding: 22px 14px 14px;
+        border: 1px solid #dfe9e1;
+        border-radius: 16px;
+        color: #fffdf8;
+        background: linear-gradient(135deg, var(--forest-light), var(--forest));
+        font-family: var(--arabic-font);
+        font-size: clamp(1.5rem, 6.2vw, 2.15rem);
+        line-height: 1.85;
+        text-align: center;
+        overflow-wrap: anywhere;
+        box-shadow: 0 8px 22px #123d3518;
+      }
+      .waqf-mark {
+        display: inline-block;
+        position: relative;
+        top: 0.24em;
+        margin: 0 3px;
+        color: var(--gold);
+        font-size: 1.35em;
+        line-height: 0;
+      }
+      .word-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+        direction: rtl;
+      }
+      .word-card {
+        flex: 1 1 auto;
+        min-width: 78px;
+        padding: 8px 10px 7px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        color: var(--ink);
+        background: #fff;
+        text-align: center;
+        cursor: default;
+      }
+      .arabic {
+        display: block;
+        direction: rtl;
+        font-family: var(--arabic-font);
+        font-size: 1.5rem;
+        /* KFGQPC Uthmanic Script требует строку не уже 1.76em (ascent 2400 +
+           descent 1200 при unitsPerEm 2048), иначе стопки огласовок налезают на
+           соседние строки переноса */
+        line-height: 1.85;
+      }
+      .word-translation {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 0.75rem;
+        direction: ltr;
+        overflow-wrap: anywhere;
+      }
+      .audio-panel {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        margin-top: 14px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: #fff;
+      }
+      .audio-panel[hidden] {
+        display: none;
+      }
+      .audio-icon {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 11px;
+        color: #f8f5ed;
+        background: var(--forest);
+        font-size: 1rem;
+      }
+      .audio-copy {
+        min-width: 0;
+        flex: 1;
+      }
+      .audio-copy > strong {
+        display: block;
+        margin: 0 0 6px;
+        font-size: 0.82rem;
+      }
+      .reciter-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .reciter-tab {
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--cream);
+        color: var(--ink);
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .reciter-tab.active {
+        border-color: var(--forest);
+        background: var(--forest);
+        color: #fffdf8;
+      }
+      .audio-player {
+        display: block;
+        width: 100%;
+        height: 36px;
+      }
+
+      /* Кнопки переключения аятов внизу */
+      .ayah-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .ayah-nav[hidden] {
+        display: none;
+      }
+      .ayah-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--cream);
+        color: var(--forest);
+        font-size: 0.84rem;
+        font-weight: 650;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease,
+          transform 0.12s ease;
+      }
+      .ayah-nav-btn[hidden] {
+        display: none;
+      }
+      .ayah-nav-btn.prev {
+        margin-right: auto;
+      }
+      .ayah-nav-btn.next {
+        margin-left: auto;
+        border-color: var(--forest);
+        background: var(--forest);
+        color: #fffdf8;
+      }
+      .ayah-nav-btn:hover {
+        border-color: var(--gold);
+      }
+      .ayah-nav-btn.prev:hover {
+        background: #f3ead8;
+      }
+      .ayah-nav-btn.next:hover {
+        background: var(--forest-light);
+      }
+      .ayah-nav-btn:active {
+        transform: scale(0.97);
+      }
+      .ayah-nav-btn svg {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 auto;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .ayah-nav-btn.next svg {
+        stroke: var(--gold);
+      }
+
+      /* Модальные окна (Перевод + Выбор аята) */
+      .translation-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: rgba(18, 61, 53, 0.45);
+        backdrop-filter: blur(3px);
+        animation: fadeIn 0.15s ease-out;
+      }
+      .translation-modal[hidden] {
+        display: none;
+      }
+      .translation-dialog {
+        width: min(100%, 420px);
+        padding: 18px 20px;
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--gold);
+        border-radius: 20px;
+        background: var(--paper);
+        color: var(--ink);
+        box-shadow: 0 20px 50px rgba(18, 61, 53, 0.25);
+        animation: slideUp 0.18s ease-out;
+      }
+      .translation-dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .translation-dialog-header strong {
+        color: var(--forest);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .translation-close {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: #fff;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .translation-close:hover {
+        color: var(--ink);
+        border-color: var(--gold);
+      }
+      .translation-dialog p {
+        margin: 0;
+        font-size: 0.98rem;
+        line-height: 1.55;
+        color: #35423d;
+      }
+
+      /* Стили списка выбора аята внутри модального окна */
+      .ayah-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: min(60vh, 360px);
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+      .ayah-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      .ayah-option:hover {
+        border-color: var(--gold);
+        background: #fcf8ef;
+      }
+      .ayah-option:active {
+        transform: scale(0.99);
+      }
+      .ayah-option.active {
+        border-color: var(--forest);
+        background: linear-gradient(135deg, var(--forest), var(--forest-light));
+        color: #fffdf8;
+        box-shadow: 0 6px 16px rgba(18, 61, 53, 0.18);
+      }
+      .ayah-option-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .ayah-badge {
+        display: grid;
+        place-items: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 9px;
+        background: var(--cream);
+        color: var(--forest);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .ayah-option.active .ayah-badge {
+        background: var(--gold);
+        color: var(--forest);
+      }
+      .ayah-option-titles {
+        display: flex;
+        flex-direction: column;
+      }
+      .ayah-option-title {
+        font-size: 0.92rem;
+        font-weight: 650;
+      }
+      .ayah-option-sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+      }
+      .ayah-option.active .ayah-option-sub {
+        color: #e6d7b7;
+      }
+      .ayah-option-check {
+        color: var(--gold);
+        font-size: 1rem;
+        font-weight: 700;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+      }
+      .ayah-option.active .ayah-option-check {
+        opacity: 1;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Десктопы и планшеты */
+      @media (min-width: 600px) and (min-height: 720px) {
+        body {
+          padding-top: 28px;
+        }
+        .hero {
+          padding: 22px 26px;
+        }
+        .content {
+          padding: 20px 26px 24px;
+        }
+        .full-sentence {
+          padding: 24px 20px 18px;
+          margin-bottom: 18px;
+        }
+        .word-card {
+          padding: 10px 12px;
+        }
+      }
+
+      /* Узкие мобильные экраны */
+      @media (max-width: 430px) {
+        body {
+          padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+        }
+        .hero {
+          padding: 13px 14px;
+        }
+        .content {
+          padding: 13px 13px 15px;
+        }
+        .word-grid {
+          gap: 6px;
+        }
+        .word-card {
+          min-width: 72px;
+          padding: 6px 8px;
+        }
+        .arabic {
+          font-size: 1.38rem;
+        }
+        .word-translation {
+          font-size: 0.72rem;
+        }
+        .ayah-nav-btn {
+          padding: 7px 11px;
+          font-size: 0.78rem;
+        }
+      }
+
+      /* Адаптация под малую высоту мобильного экрана */
+      @media (max-height: 700px) {
+        body {
+          padding-top: 8px;
+          padding-bottom: 8px;
+        }
+        .hero {
+          padding: 10px 14px;
+        }
+        .hero h2 {
+          font-size: 1.15rem;
+        }
+        .lesson-select-btn {
+          min-height: 34px;
+          padding: 4px 10px;
+          font-size: 0.82rem;
+        }
+        .fullscreen-btn {
+          width: 34px;
+          height: 34px;
+        }
+        .content {
+          padding: 11px 13px 12px;
+        }
+        .section-heading {
+          margin-bottom: 6px;
+        }
+        .section-heading h3 {
+          font-size: 0.76rem;
+        }
+        .translation-trigger {
+          padding: 4px 9px;
+          font-size: 0.72rem;
+        }
+        .full-sentence {
+          margin-bottom: 10px;
+          padding: 16px 10px 10px;
+          font-size: clamp(1.35rem, 5.5vw, 1.75rem);
+          line-height: 1.85;
+        }
+        .word-grid {
+          gap: 5px;
+        }
+        .word-card {
+          padding: 5px 7px;
+          border-radius: 10px;
+        }
+        .arabic {
+          font-size: 1.28rem;
+          line-height: 1.85;
+        }
+        .word-translation {
+          font-size: 0.68rem;
+          margin-top: 1px;
+        }
+        .audio-panel {
+          margin-top: 10px;
+          padding: 9px 11px;
+        }
+        .audio-icon {
+          width: 30px;
+          height: 30px;
+          font-size: 0.9rem;
+        }
+        .reciter-tabs {
+          gap: 4px;
+          margin-bottom: 6px;
+        }
+        .reciter-tab {
+          padding: 4px 8px;
+          font-size: 0.7rem;
+        }
+        .audio-player {
+          height: 32px;
+        }
+        .ayah-nav {
+          margin-top: 10px;
+          padding-top: 10px;
+        }
+        .ayah-nav-btn {
+          min-height: 36px;
+          padding: 6px 10px;
+          font-size: 0.76rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+
+      /* Тестовый режим: основной блок занимает всё тело страницы */
+      body {
+        padding: 0;
+      }
+      .page {
+        display: flex;
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+      }
+      .lesson-card {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .content {
+        flex: 1 1 auto;
+      }
+
+      /* Тестовый режим: «Слова аята» — во фрейме со скроллом,
+         аудио и навигация всегда прижаты к низу экрана */
+      body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+      }
+      .page,
+      .lesson-card {
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .content {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .word-grid {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        align-content: flex-start;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        /* Фон фрейма темнее карточек и подложки, чтобы белые ячейки слов читались */
+        background: #f0e8d6;
+        box-shadow: inset 0 1px 3px #243a2c14;
+        overscroll-behavior: contain;
+      }
+      .audio-panel,
+      .ayah-nav {
+        flex: 0 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="lesson-card">
+        <div class="hero">
+          <div class="hero-top">
+            <div>
+              <h2 id="lesson-title">Коран 2:2</h2>
+            </div>
+            <div class="hero-actions">
+              <button
+                type="button"
+                class="lesson-select-btn"
+                id="open-ayah-btn"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-label="Выбрать аят"
+              >
+                <span id="current-ayah-label">Аят 1</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="fullscreen-btn"
+                id="fullscreen-btn"
+                aria-label="Во весь экран"
+                title="Во весь экран"
+              >
+                <!-- Иконка разворачивания -->
+                <svg id="fs-enter-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+                  />
+                </svg>
+                <!-- Иконка выхода из полноэкранного режима -->
+                <svg id="fs-exit-icon" viewBox="0 0 24 24" aria-hidden="true" style="display: none">
+                  <path
+                    d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="section-heading">
+            <div class="heading-actions">
+              <button
+                type="button"
+                class="translation-trigger sentence-toggle"
+                id="toggle-sentence-btn"
+                aria-controls="full-sentence"
+                aria-expanded="false"
+              >
+                Показать аят целиком
+              </button>
+              <button
+                type="button"
+                class="translation-trigger"
+                id="open-translation-btn"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
+                Перевод Кулиева
+              </button>
+            </div>
+          </div>
+          <div class="full-sentence" lang="ar" dir="rtl" id="full-sentence" hidden></div>
+
+          <div class="section-heading"><h3 id="heading-words">Слова аята</h3></div>
+          <div class="word-grid" id="word-grid"></div>
+
+          <div class="audio-panel" id="audio-panel">
+            <div class="audio-icon" aria-hidden="true">♫</div>
+            <div class="audio-copy">
+              <strong id="audio-heading">Послушать аят</strong>
+              <div class="reciter-tabs" id="reciter-tabs"></div>
+              <audio class="audio-player" id="main-audio-player" controls preload="none"></audio>
+            </div>
+          </div>
+
+          <!-- Навигация по соседним аятам -->
+          <nav class="ayah-nav" id="ayah-nav" aria-label="Навигация по аятам" hidden>
+            <button type="button" class="ayah-nav-btn prev" id="prev-ayah-btn" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+              <span id="prev-ayah-text">Предыдущий аят</span>
+            </button>
+            <button type="button" class="ayah-nav-btn next" id="next-ayah-btn" hidden>
+              <span id="next-ayah-text">Следующий аят</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <!-- Всплывающее окно выбора аята -->
+    <div
+      class="translation-modal"
+      id="ayah-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ayah-modal-title"
+      hidden
+    >
+      <div class="translation-dialog">
+        <div class="translation-dialog-header">
+          <strong id="ayah-modal-title">Выберите аят</strong>
+          <button
+            type="button"
+            class="translation-close"
+            id="close-ayah-btn"
+            aria-label="Закрыть список аятов"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="ayah-list" id="ayah-list" role="listbox" aria-label="Список аятов"></div>
+      </div>
+    </div>
+
+    <!-- Всплывающее окно с переводом предложения -->
+    <div
+      class="translation-modal"
+      id="translation-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      hidden
+    >
+      <div class="translation-dialog">
+        <div class="translation-dialog-header">
+          <strong id="modal-title">Перевод Кулиева</strong>
+          <button
+            type="button"
+            class="translation-close"
+            id="close-translation-btn"
+            aria-label="Закрыть перевод"
+          >
+            ✕
+          </button>
+        </div>
+        <p id="sentence-translation"></p>
+      </div>
+    </div>
+
+    <script>
+      // Басмала — заголовок суры, аятом не является (в подсчёте Хафса
+      // отдельная строка с номером 0). Для суры 1 она и есть аят 1.
+      const BASMALA = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ';
+
+      const sentences = [
+        {
+          title: 'Сура 2',
+          ayah: 0,
+          isBasmala: true,
+          sentence: BASMALA,
+          translation: 'Во имя Аллаха, Милостивого, Милосердного!',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/1/1.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/1/1.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/1/1.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/1/1.mp3',
+            },
+          ],
+          cells: [
+            { word: 'بِسْمِ', translation: 'С именем' },
+            { word: 'ٱللَّهِ', translation: 'Аллаха' },
+            { word: 'ٱلرَّحْمَـٰنِ', translation: 'Милостивого' },
+            { word: 'ٱلرَّحِيمِ', translation: 'Милосердного' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 1,
+          sentence: 'الٓمٓ',
+          translation: 'Алиф. Лам. Мим.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/1.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/1.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/1.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/1.mp3',
+            },
+          ],
+          cells: [
+            { word: 'ا', translation: 'Алиф' },
+            { word: 'لٓ', translation: 'Лям' },
+            { word: 'مٓ', translation: 'Мим' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 2,
+          sentence: 'ذَٰلِكَ ٱلْكِتَـٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ',
+          translation:
+            'Это Писание, в котором нет сомнения, является верным руководством для богобоязненных.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/2.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/2.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/2.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/2.mp3',
+            },
+          ],
+          cells: [
+            { word: 'ذَٰلِكَ', translation: 'То' },
+            { word: 'ٱلْكِتَـٰبُ', translation: 'Писание' },
+            { word: 'لَا', translation: 'нет' },
+            { word: 'رَيْبَ', translation: 'сомнения' },
+            { word: 'فِيهِ', translation: 'в нём' },
+            { word: 'هُدًى', translation: 'руководство' },
+            { word: 'لِّلْمُتَّقِينَ', translation: 'для остерегающихся' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 3,
+          sentence:
+            'ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَـٰهُمْ يُنفِقُونَ',
+          translation:
+            'которые веруют в сокровенное, совершают намаз и расходуют из того, чем Мы их наделили,',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/3.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/3.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/3.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/3.mp3',
+            },
+          ],
+          cells: [
+            { word: 'ٱلَّذِينَ', translation: 'которые' },
+            { word: 'يُؤْمِنُونَ', translation: 'веруют' },
+            { word: 'بِٱلْغَيْبِ', translation: 'в скрытое' },
+            { word: 'وَيُقِيمُونَ', translation: 'и выстаивают' },
+            { word: 'ٱلصَّلَوٰةَ', translation: 'молитву' },
+            { word: 'وَمِمَّا', translation: 'и из того, что' },
+            { word: 'رَزَقْنَـٰهُمْ', translation: 'наделили Мы их' },
+            { word: 'يُنفِقُونَ', translation: 'расходуют' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 4,
+          sentence:
+            'وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْـَٔاخِرَةِ هُمْ يُوقِنُونَ',
+          translation:
+            'которые веруют в ниспосланное тебе и ниспосланное до тебя и убеждены в Последней жизни.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/4.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/4.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/4.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/4.mp3',
+            },
+          ],
+          cells: [
+            { word: 'وَٱلَّذِينَ', translation: 'и которые' },
+            { word: 'يُؤْمِنُونَ', translation: 'веруют' },
+            { word: 'بِمَآ', translation: 'в то, что' },
+            { word: 'أُنزِلَ', translation: 'ниспослано' },
+            { word: 'إِلَيْكَ', translation: 'тебе' },
+            { word: 'وَمَآ', translation: 'и что' },
+            { word: 'أُنزِلَ', translation: 'ниспослано' },
+            { word: 'مِن قَبْلِكَ', translation: 'от до тебя' },
+            { word: 'وَبِٱلْـَٔاخِرَةِ', translation: 'и в Последней жизни' },
+            { word: 'هُمْ', translation: 'они' },
+            { word: 'يُوقِنُونَ', translation: 'убеждены' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 5,
+          sentence:
+            'أُوْلَـٰٓئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُوْلَـٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ',
+          translation:
+            'Они следуют верному руководству от их Господа, и они являются преуспевшими.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/5.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/5.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/5.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/5.mp3',
+            },
+          ],
+          cells: [
+            { word: 'أُوْلَـٰٓئِكَ', translation: 'те' },
+            { word: 'عَلَىٰ', translation: 'на' },
+            { word: 'هُدًى', translation: 'руководстве' },
+            { word: 'مِّن', translation: 'от' },
+            { word: 'رَّبِّهِمْ', translation: 'их Господа' },
+            { word: 'وَأُوْلَـٰٓئِكَ', translation: 'и те' },
+            { word: 'هُمُ', translation: 'они' },
+            { word: 'ٱلْمُفْلِحُونَ', translation: 'преуспевшие' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 6,
+          sentence:
+            'إِنَّ ٱلَّذِينَ كَفَرُواْ سَوَآءٌ عَلَيْهِمْ ءَأَنذَرْتَهُمْ أَمْ لَمْ تُنذِرْهُمْ لَا يُؤْمِنُونَ',
+          translation:
+            'Воистину, неверующим безразлично, предостерег ты их или не предостерег. Они всё равно не уверуют.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/6.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/6.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/6.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/6.mp3',
+            },
+          ],
+          cells: [
+            { word: 'إِنَّ', translation: 'воистину' },
+            { word: 'ٱلَّذِينَ', translation: 'те, которые' },
+            { word: 'كَفَرُواْ', translation: 'не уверовали' },
+            { word: 'سَوَآءٌ', translation: 'одинаково' },
+            { word: 'عَلَيْهِمْ', translation: 'для них' },
+            { word: 'ءَأَنذَرْتَهُمْ', translation: 'предостерег ли ты их' },
+            { word: 'أَمْ', translation: 'или' },
+            { word: 'لَمْ', translation: 'не' },
+            { word: 'تُنذِرْهُمْ', translation: 'предостерег ты их' },
+            { word: 'لَا', translation: 'не' },
+            { word: 'يُؤْمِنُونَ', translation: 'уверуют они' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 7,
+          sentence:
+            'خَتَمَ ٱللَّهُ عَلَىٰ قُلُوبِهِمْ وَعَلَىٰ سَمْعِهِمْ ۖ وَعَلَىٰٓ أَبْصَـٰرِهِمْ غِشَـٰوَةٌ ۖ وَلَهُمْ عَذَابٌ عَظِيمٌ',
+          translation:
+            'Аллах запечатал их сердца и слух, а на глаза набросил покрывало. Им уготованы великие мучения.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/7.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/7.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/7.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/7.mp3',
+            },
+          ],
+          cells: [
+            { word: 'خَتَمَ', translation: 'Наложил печать' },
+            { word: 'ٱللَّهُ', translation: 'Аллах' },
+            { word: 'عَلَىٰ', translation: 'на' },
+            { word: 'قُلُوبِهِمْ', translation: 'их сердца' },
+            { word: 'وَعَلَىٰ', translation: 'и на' },
+            { word: 'سَمْعِهِمْ', translation: 'их слух' },
+            { word: 'وَعَلَىٰٓ', translation: 'и на' },
+            { word: 'أَبْصَـٰرِهِمْ', translation: 'взорах их' },
+            { word: 'غِشَـٰوَةٌ', translation: 'покрывала' },
+            { word: 'وَلَهُمْ', translation: 'и для них' },
+            { word: 'عَذَابٌ', translation: 'Мучение' },
+            { word: 'عَظِيمٌ', translation: 'Великое' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 8,
+          sentence:
+            'وَمِنَ ٱلنَّاسِ مَن يَقُولُ ءَامَنَّا بِٱللَّهِ وَبِٱلْيَوْمِ ٱلْـَٔاخِرِ وَمَا هُم بِمُؤْمِنِينَ',
+          translation:
+            'Среди людей есть те, которые говорят: «Мы уверовали в Аллаха и в Последний день». Однако на самом деле они не верующие.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/8.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/8.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/8.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/8.mp3',
+            },
+          ],
+          cells: [
+            { word: 'وَمِنَ', translation: 'и из (числа)' },
+            { word: 'ٱلنَّاسِ', translation: 'людей' },
+            { word: 'مَن', translation: '(есть) тот, кто' },
+            { word: 'يَقُولُ', translation: 'говорит' },
+            { word: 'ءَامَنَّا', translation: 'мы уверовали' },
+            { word: 'بِٱللَّهِ', translation: 'в Аллаха' },
+            { word: 'وَبِٱلْيَوْمِ', translation: 'и в День' },
+            { word: 'ٱلْـَٔاخِرِ', translation: 'Последний' },
+            { word: 'وَمَا', translation: 'в то время как не являются' },
+            { word: 'هُم', translation: 'они' },
+            { word: 'بِمُؤْمِنِينَ', translation: 'верующими' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 9,
+          sentence:
+            'يُخَـٰدِعُونَ ٱللَّهَ وَٱلَّذِينَ ءَامَنُواْ وَمَا يَخْدَعُونَ إِلَّآ أَنفُسَهُمْ وَمَا يَشْعُرُونَ',
+          translation:
+            'Они пытаются обмануть Аллаха и верующих, но на самом деле обманывают только самих себя, и не ощущают того.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/9.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/9.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/9.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/9.mp3',
+            },
+          ],
+          cells: [
+            { word: 'يُخَـٰدِعُونَ', translation: 'Они пытаются обмануть' },
+            { word: 'ٱللَّهَ', translation: 'Аллаха' },
+            { word: 'وَٱلَّذِينَ', translation: 'и тех, которые' },
+            { word: 'ءَامَنُواْ', translation: 'уверовали' },
+            { word: 'وَمَا', translation: 'в то время как не' },
+            { word: 'يَخْدَعُونَ', translation: 'обманывают они (никого)' },
+            { word: 'إِلَّآ', translation: 'кроме как' },
+            { word: 'أَنفُسَهُمْ', translation: 'самих себя' },
+            { word: 'وَمَا', translation: 'и не' },
+            { word: 'يَشْعُرُونَ', translation: 'они осознают (этого)' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 10,
+          sentence:
+            'فِى قُلُوبِهِم مَّرَضٌ فَزَادَهُمُ ٱللَّهُ مَرَضًا‌ۖ وَلَهُمْ عَذَابٌ أَلِيمُۢ بِمَا كَانُواْ يَكْذِبُونَ',
+          translation:
+            'Их сердца поражены недугом. Да усилит Аллах их недуг! Им уготованы мучительные страдания за то, что они лгали.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/10.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/10.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/10.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/10.mp3',
+            },
+          ],
+          cells: [
+            { word: 'فِى', translation: 'в' },
+            { word: 'قُلُوبِهِم', translation: 'их сердцах' },
+            { word: 'مَّرَضٌ', translation: 'болезнь' },
+            { word: 'فَزَادَهُمُ', translation: 'да увеличит им' },
+            { word: 'ٱللَّهُ', translation: 'Аллах' },
+            { word: 'مَرَضًا', translation: 'болезнь' },
+            { word: 'وَلَهُمْ', translation: 'и для них' },
+            { word: 'عَذَابٌ', translation: 'Мучение' },
+            { word: 'أَلِيمُۢ', translation: 'Болезненное' },
+            { word: 'بِمَا', translation: 'за то, что' },
+            { word: 'كَانُواْ يَكْذِبُونَ', translation: 'они лгали' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 11,
+          sentence:
+            'وَإِذَا قِيلَ لَهُمْ لَا تُفْسِدُواْ فِى ٱلْأَرْضِ قَالُوٓاْ إِنَّمَا نَحْنُ مُصْلِحُونَ',
+          translation:
+            'Когда им говорят: «Не распространяйте нечестия на земле!». - они отвечают: «Только мы и устанавливаем порядок».',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/11.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/11.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/11.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/11.mp3',
+            },
+          ],
+          cells: [
+            { word: 'وَإِذَا', translation: 'а когда' },
+            { word: 'قِيلَ', translation: '(было) сказано' },
+            { word: 'لَهُمْ', translation: 'им' },
+            { word: 'لَا', translation: 'не' },
+            { word: 'تُفْسِدُواْ', translation: 'распространяйте беспорядок' },
+            { word: 'فِى', translation: 'на' },
+            { word: 'ٱلْأَرْضِ', translation: 'земле' },
+            { word: 'قَالُوٓاْ', translation: 'они сказали' },
+            { word: 'إِنَّمَا', translation: 'лишь' },
+            { word: 'نَحْنُ', translation: 'мы' },
+            { word: 'مُصْلِحُونَ', translation: 'те, кто устанавливает порядок' },
+          ],
+        },
+        {
+          title: 'Сура 2',
+          ayah: 12,
+          sentence: 'أَلَآ إِنَّهُمْ هُمُ ٱلْمُفْسِدُونَ وَلَـٰكِن لَّا يَشْعُرُونَ',
+          translation: 'Воистину, именно они распространяют нечестие, но они не осознают этого.',
+          audios: [
+            {
+              title: 'аль-Хусари',
+              src: 'audio/husary/2/12.mp3',
+            },
+            {
+              title: 'аш-Шатри',
+              src: 'audio/shaatree/2/12.mp3',
+            },
+            {
+              title: 'аль-Гамиди',
+              src: 'audio/ghamadi/2/12.mp3',
+            },
+            {
+              title: 'аль-Афаси',
+              src: 'audio/alafasy/2/12.mp3',
+            },
+          ],
+          cells: [
+            { word: 'أَلَآ', translation: '(обратите внимание)' },
+            { word: 'إِنَّهُمْ', translation: 'поистине, они' },
+            { word: 'هُمُ', translation: 'они' },
+            { word: 'ٱلْمُفْسِدُونَ', translation: 'распространяющие беспорядок' },
+            { word: 'وَلَـٰكِن', translation: 'но' },
+            { word: 'لَّا', translation: 'не' },
+            { word: 'يَشْعُرُونَ', translation: 'осознают они (этого)' },
+          ],
+        },
+      ];
+
+      const lessonTitle = document.getElementById('lesson-title');
+      const fullSentenceEl = document.getElementById('full-sentence');
+      const toggleSentenceBtn = document.getElementById('toggle-sentence-btn');
+      let sentenceVisible = false;
+      const grid = document.getElementById('word-grid');
+      const audioPanel = document.getElementById('audio-panel');
+      const reciterTabs = document.getElementById('reciter-tabs');
+      const mainPlayer = document.getElementById('main-audio-player');
+
+      // Элементы навигации внизу
+      const ayahNav = document.getElementById('ayah-nav');
+      const prevAyahBtn = document.getElementById('prev-ayah-btn');
+      const nextAyahBtn = document.getElementById('next-ayah-btn');
+      const prevAyahText = document.getElementById('prev-ayah-text');
+      const nextAyahText = document.getElementById('next-ayah-text');
+
+      // Заголовки разделов: переименовываются, когда выбрана басмала
+      const headingWords = document.getElementById('heading-words');
+      const audioHeading = document.getElementById('audio-heading');
+
+      // Элементы окна перевода
+      const modal = document.getElementById('translation-modal');
+      const openBtn = document.getElementById('open-translation-btn');
+      const closeBtn = document.getElementById('close-translation-btn');
+
+      // Элементы окна выбора аята
+      const ayahModal = document.getElementById('ayah-modal');
+      const openAyahBtn = document.getElementById('open-ayah-btn');
+      const closeAyahBtn = document.getElementById('close-ayah-btn');
+      const ayahList = document.getElementById('ayah-list');
+      const currentAyahLabel = document.getElementById('current-ayah-label');
+
+      const fsBtn = document.getElementById('fullscreen-btn');
+      const fsEnterIcon = document.getElementById('fs-enter-icon');
+      const fsExitIcon = document.getElementById('fs-exit-icon');
+
+      const WAQF_REGEX = /(\u200C?[\u06D6-\u06DC])/g;
+      let currentIndex = 0;
+
+      // Полноэкранный режим
+      function getFullscreenElement() {
+        return document.fullscreenElement || document.webkitFullscreenElement;
+      }
+
+      function updateFullscreenUI() {
+        const isFs = Boolean(getFullscreenElement());
+        fsEnterIcon.style.display = isFs ? 'none' : 'block';
+        fsExitIcon.style.display = isFs ? 'block' : 'none';
+        const label = isFs ? 'Выйти из полноэкранного режима' : 'Во весь экран';
+        fsBtn.setAttribute('aria-label', label);
+        fsBtn.title = label;
+      }
+
+      if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
+        fsBtn.hidden = true;
+      } else {
+        fsBtn.addEventListener('click', () => {
+          const docEl = document.documentElement;
+          if (!getFullscreenElement()) {
+            if (docEl.requestFullscreen) {
+              docEl.requestFullscreen().catch(() => {});
+            } else if (docEl.webkitRequestFullscreen) {
+              docEl.webkitRequestFullscreen();
+            }
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            }
+          }
+        });
+        document.addEventListener('fullscreenchange', updateFullscreenUI);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+      }
+
+      // Модальное окно перевода
+      function toggleModal(show) {
+        modal.hidden = !show;
+        openBtn.setAttribute('aria-expanded', String(show));
+      }
+
+      // Модальное окно выбора аята
+      function toggleAyahModal(show) {
+        ayahModal.hidden = !show;
+        openAyahBtn.setAttribute('aria-expanded', String(show));
+      }
+
+      openBtn.addEventListener('click', () => toggleModal(true));
+      closeBtn.addEventListener('click', () => toggleModal(false));
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) toggleModal(false);
+      });
+
+      openAyahBtn.addEventListener('click', () => toggleAyahModal(true));
+      closeAyahBtn.addEventListener('click', () => toggleAyahModal(false));
+      ayahModal.addEventListener('click', (e) => {
+        if (e.target === ayahModal) toggleAyahModal(false);
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (!modal.hidden) toggleModal(false);
+          if (!ayahModal.hidden) toggleAyahModal(false);
+        }
+      });
+
+      prevAyahBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          showSentence(currentIndex - 1);
+        }
+      });
+
+      nextAyahBtn.addEventListener('click', () => {
+        if (currentIndex < sentences.length - 1) {
+          showSentence(currentIndex + 1);
+        }
+      });
+
+      function renderArabicWithWaqf(container, text) {
+        container.replaceChildren();
+        const parts = text.split(WAQF_REGEX);
+        parts.forEach((part) => {
+          if (!part) return;
+          if (WAQF_REGEX.test(part)) {
+            const mark = document.createElement('span');
+            mark.className = 'waqf-mark';
+            mark.textContent = part.replace(/\u200C/g, '');
+            container.appendChild(mark);
+          } else {
+            container.appendChild(document.createTextNode(part));
+          }
+          WAQF_REGEX.lastIndex = 0;
+        });
+      }
+
+      // Создание стилизованных карточек выбора аята (без текста аята)
+      sentences.forEach((item, index) => {
+        const ayahNum = item.ayah ?? index + 1;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ayah-option';
+        btn.dataset.index = index;
+        btn.setAttribute('role', 'option');
+
+        const info = document.createElement('div');
+        info.className = 'ayah-option-info';
+
+        const badge = document.createElement('span');
+        badge.className = 'ayah-badge';
+        badge.textContent = item.isBasmala ? '\u06DD' : ayahNum;
+
+        const titles = document.createElement('div');
+        titles.className = 'ayah-option-titles';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'ayah-option-title';
+        titleSpan.textContent = item.isBasmala ? 'Басмала' : `Аят ${ayahNum}`;
+
+        const subSpan = document.createElement('span');
+        subSpan.className = 'ayah-option-sub';
+        subSpan.textContent = (item.title || '') + (item.isBasmala ? ' · не является аятом' : '');
+
+        titles.append(titleSpan, subSpan);
+        info.append(badge, titles);
+
+        const check = document.createElement('span');
+        check.className = 'ayah-option-check';
+        check.setAttribute('aria-hidden', 'true');
+        check.textContent = '✓';
+
+        btn.append(info, check);
+
+        btn.addEventListener('click', () => {
+          showSentence(index);
+          toggleAyahModal(false);
+        });
+
+        ayahList.appendChild(btn);
+      });
+
+      function showSentence(index) {
+        const item = sentences[index];
+        if (!item) return;
+        currentIndex = index;
+        const ayahNum = item.ayah ?? index + 1;
+
+        toggleModal(false);
+        grid.replaceChildren();
+        lessonTitle.textContent = item.title || `Аят ${ayahNum}`;
+        currentAyahLabel.textContent = item.isBasmala ? 'Басмала' : `Аят ${ayahNum}`;
+
+        // Формулировки разделов под басмалу
+        const isBasmala = Boolean(item.isBasmala);
+        headingWords.textContent = isBasmala ? 'Слова басмалы' : 'Слова аята';
+        audioHeading.textContent = isBasmala ? 'Послушать басмалу' : 'Послушать аят';
+
+        // Обновление активного состояния в модальном списке
+        ayahList.querySelectorAll('.ayah-option').forEach((btn, idx) => {
+          const isSelected = idx === index;
+          btn.classList.toggle('active', isSelected);
+          btn.setAttribute('aria-selected', String(isSelected));
+        });
+
+        renderArabicWithWaqf(fullSentenceEl, item.sentence);
+        setSentenceVisible(false);
+        document.getElementById('sentence-translation').textContent = item.translation;
+
+        item.cells.forEach((cell) => {
+          const card = document.createElement('div');
+          card.className = 'word-card';
+
+          const arabic = document.createElement('span');
+          arabic.className = 'arabic';
+          arabic.lang = 'ar';
+          renderArabicWithWaqf(arabic, cell.word);
+
+          const translation = document.createElement('span');
+          translation.className = 'word-translation';
+          translation.textContent = cell.translation;
+
+          card.append(arabic, translation);
+          grid.appendChild(card);
+        });
+
+        renderAudios(item.audios || []);
+
+        // Обновление кнопок «Предыдущий аят» и «Следующий аят»
+        const hasPrev = index > 0;
+        const hasNext = index < sentences.length - 1;
+
+        prevAyahBtn.hidden = !hasPrev;
+        nextAyahBtn.hidden = !hasNext;
+        ayahNav.hidden = !hasPrev && !hasNext;
+
+        // Подписи кнопок: от басмалы идём в «Первый аят», от аята 1 назад — «Басмала»
+        nextAyahText.textContent = isBasmala ? 'Первый аят' : 'Следующий аят';
+        prevAyahText.textContent =
+          hasPrev && sentences[index - 1].isBasmala ? 'Басмала' : 'Предыдущий аят';
+      }
+
+      // Текст аята/басмалы скрыт, пока не нажата кнопка «Показать аят целиком»
+      function setSentenceVisible(visible) {
+        const item = sentences[currentIndex];
+        const noun = item && item.isBasmala ? 'басмалу' : 'аят';
+        sentenceVisible = visible;
+        fullSentenceEl.hidden = !visible;
+        toggleSentenceBtn.textContent =
+          (visible ? 'Скрыть ' : 'Показать ') + noun + ' целиком';
+        toggleSentenceBtn.setAttribute('aria-expanded', String(visible));
+      }
+
+      toggleSentenceBtn.addEventListener('click', () => {
+        setSentenceVisible(!sentenceVisible);
+      });
+
+      function renderAudios(audios) {
+        reciterTabs.replaceChildren();
+        mainPlayer.pause();
+
+        if (!audios.length) {
+          audioPanel.hidden = true;
+          mainPlayer.removeAttribute('src');
+          return;
+        }
+
+        audioPanel.hidden = false;
+        mainPlayer.src = audios[0].src;
+
+        audios.forEach((track, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'reciter-tab' + (idx === 0 ? ' active' : '');
+          btn.textContent = track.title;
+
+          btn.addEventListener('click', () => {
+            reciterTabs
+              .querySelectorAll('.reciter-tab')
+              .forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            mainPlayer.src = track.src;
+            mainPlayer.play().catch(() => {});
+          });
+
+          reciterTabs.appendChild(btn);
+        });
+      }
+
+      if (sentences.length) {
+        showSentence(0);
+      } else {
+        document.querySelector('.lesson-card').textContent =
+          'Добавьте предложение в массив sentences в коде.';
+      }
+    </script>
+  </body>
+</html>
