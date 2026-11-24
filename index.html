@@ -102,12 +102,21 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        /* Строка кнопок (38px) задаёт высоту шапки, чтобы она не «скакала»,
+           когда меняется текст заголовка при переключении аятов */
+        min-height: 38px;
         gap: 10px;
       }
       .hero h2 {
         margin: 0;
         font-size: clamp(1.2rem, 4.5vw, 1.65rem);
         line-height: 1.2;
+        /* Заголовок всегда в одну строку — высота шапки не меняется */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        flex: 1 1 auto;
       }
       .hero-actions {
         display: flex;
@@ -1675,9 +1684,9 @@
           ],
           cells: [
             { word: 'أَوْ', translation: 'или' },
-            { word: 'كَصَيِّبٍ', translation: 'подобны ливню' },
-            { word: 'مِّنَ', translation: 'с' },
-            { word: 'ٱلسَّمَآءِ', translation: 'неба' },
+            { word: 'كَصَيِّبٍ', translation: 'подобны ливню' },
+            { word: 'مِّنَ', translation: 'с' },
+            { word: 'ٱلسَّمَآءِ', translation: 'неба' },
             { word: 'فِيهِ', translation: 'в нем' },
             { word: 'ظُلُمَـٰتٌ', translation: 'мраки' },
             { word: 'وَرَعْدٌ', translation: 'и гром' },
@@ -1686,11 +1695,11 @@
             { word: 'أَصَـٰبِعَهُمْ', translation: 'пальцы свои' },
             { word: 'فِىٓ', translation: 'в' },
             { word: 'ءَاذَانِهِم', translation: 'уши свои' },
-            { word: 'مِّنَ', translation: 'от' },
-            { word: 'ٱلصَّوَٰعِقِ', translation: 'ударов грома' },
+            { word: 'مِّنَ', translation: 'от' },
+            { word: 'ٱلصَّوَٰعِقِ', translation: 'ударов грома' },
             { word: 'حَذَرَ', translation: '(из-за) страха' },
-            { word: 'ٱلْمَوْتِ', translation: 'смерти' },
-            { word: 'وَٱللَّهُ', translation: 'и Аллах' },
+            { word: 'ٱلْمَوْتِ‌ۚ', translation: 'смерти' },
+            { word: 'وَٱللَّهُ', translation: 'и Аллах' },
             { word: 'مُحِيطُۢ', translation: 'Тот, кто объемлет' },
             { word: 'بِٱلْكَـٰفِرِينَ', translation: 'неверующих' },
           ],
