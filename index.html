@@ -81,6 +81,9 @@
         padding: 16px 18px;
         color: #fffdf8;
         background: linear-gradient(135deg, var(--forest), #0d302a);
+        /* Шапка не сжимается flex-ом, когда контенту не хватает высоты экрана:
+           иначе нижний паддинг «съедается» и высота шапки скачет между аятами */
+        flex: 0 0 auto;
       }
       .hero::after {
         position: absolute;
